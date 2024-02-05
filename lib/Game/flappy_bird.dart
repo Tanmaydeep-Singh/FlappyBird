@@ -1,6 +1,3 @@
-import 'dart:async';
-import 'dart:ui';
-
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
@@ -9,15 +6,16 @@ import 'package:flappy_bird/Game/components/bird.dart';
 import 'package:flappy_bird/Game/components/confi.dart';
 import 'package:flappy_bird/Game/components/ground.dart';
 import 'package:flappy_bird/Game/components/pipe_group.dart';
-import 'package:flutter/material.dart';
+
+import 'package:flutter/painting.dart';
 
 class FlappyBirdGame extends FlameGame with TapDetector, HasCollisionDetection {
+  FlappyBirdGame();
+
   late Bird bird;
-  late TextComponent score;
+  Timer interval = Timer(Config.pipeInterval, repeat: true);
   bool isHit = false;
-
-  Timer intervel = Timer(Config.pipeInterval, repeat: true);
-
+  late TextComponent score;
   @override
   Future<void> onLoad() async {
     addAll([
@@ -27,33 +25,28 @@ class FlappyBirdGame extends FlameGame with TapDetector, HasCollisionDetection {
       score = buildScore(),
     ]);
 
-    intervel.onTick = () => add(PipeGroup());
+    interval.onTick = () => add(PipeGroup());
   }
 
   TextComponent buildScore() {
     return TextComponent(
-      text: 'Score: 0',
-      position: Vector2(size.x / 2, size.y / 2 * 0.2),
-      anchor: Anchor.center,
-      textRenderer: TextPaint(
-          style: TextStyle(
-        fontSize: 60,
-        fontFamily: 'Game',
-        color: Colors.white,
-      )),
-    );
+        position: Vector2(size.x / 2, size.y / 2 * 0.2),
+        anchor: Anchor.center,
+        textRenderer: TextPaint(
+          style: const TextStyle(
+              fontSize: 40, fontFamily: 'Game', fontWeight: FontWeight.bold),
+        ));
   }
 
   @override
   void onTap() {
-    super.onTap();
     bird.fly();
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-    intervel.update(dt);
+    interval.update(dt);
     score.text = 'Score: ${bird.score}';
   }
 }
